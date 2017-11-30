@@ -1,0 +1,173 @@
+\documentclass[11pt,a4paper]{article}
+
+%\usepackage[T1]{fontenc}
+%\usepackage[utf8]{inputenc}
+%\usepackage{authblk}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathabx}
+\usepackage{fullpage}
+\usepackage{mdwlist}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{remark}[theorem]{Remark}
+
+% General Tricks
+\newcommand{\prob}[2]{\mathop{\mathrm{Pr}}_{#1}[#2]}
+\newcommand{\avg}[2]{\mathop{\textbf{E}}_{#1}[#2]}
+\newcommand{\poly}{\mathop{\mathrm{poly}}}
+\newcommand{\tm}[1]{\textrm{#1}}
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\bra}[1]{\{#1\}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\setcond}[2]{\left\{#1\: \middle|\: #2\right\}}
+\newcommand{\errnote}[1]{{ \small #1}} 
+
+% Complexity shortcuts
+% General Math shortcuts
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\integer}{\mathbb{Z}}
+\newcommand{\rational}{\mathbb{Q}}
+\newcommand{\ip}[2]{\langle #1, #2 \rangle}
+
+\newcommand{\union}{\cup}
+\newcommand{\intersect}{\cap}
+\newcommand{\SPS}{\Sigma\Pi\Sigma}
+\newcommand{\spsp}[2]{\Sigma\Pi^{#1}\Sigma\Pi^{#2}}
+%\newcommand{\sPsP}[2]{\Sigma\Pi^{[#1]}\Sigma\Pi^{\{#2\}}}
+\newcommand{\IMM}{\mathrm{IMM}}
+\newcommand{\Det}{\mathrm{Det}}
+\newcommand{\pder}[2]{\ensuremath{\partial{#1} \over
+  \partial{#2}}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\Dim}{\mathrm{dim}}
+\newcommand{\spd}[3]{\langle \partial_{#2} #1 \rangle_{\leq #3}}
+\newcommand{\pd}[2]{\partial_{#2} #1}
+\newcommand{\LM}{\mathrm{LM}}
+\newcommand{\MSupp}{\mathrm{MSupp}}
+\newcommand{\mynorm}[1]{\Vert #1 \Vert}
+
+\newenvironment{myq}{\newline\noindent\begin{minipage}{\textwidth}}{\end{minipage}}
+
+%Cosmetic commands
+%\setlength{\parindent}{0pt}
+%\setlength{\parskip}{10pt}
+
+
+%margin comments
+\newcommand{\comment}[2]{\marginpar{\tiny{\textbf{#1: }\textit{#2}}}}
+\newcommand{\srikanth}[1]{\comment{S}{#1}}
+\newcommand{\nutan}[1]{\comment{N}{#1}}
+\newcommand{\chandan}[1]{\comment{C}{#1}}
+
+\newcommand{\f}{\mathrm{\Lambda}}
+%
+
+\title{Proof of the Hanson-Wright inequality}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}
+\label{thm:HW}
+Let $A$ be a symmetric matrix with trace $0$\footnote{I originally wanted to do this proof for the special case when $A$ has zeroes on the diagonal. But that proof breaks down. It turns out that trace $0$ is a nice linear algebraic invariant that is easier to maintain.} (so that the constant term of the polynomial $x^TAx$ is $0$). Then, we have
+\[
+\prob{x\sim \{-1,1\}^n}{|x^TAx| \geq \lambda} \leq \exp\{-\Omega(\min\{\frac{\lambda^2}{\mynorm{A}_F^2}, \frac{\lambda}{\mynorm{A}_2}\})\}.
+\]
+\end{theorem}
+
+The proof is based on an upper bound on the $L_2$-norm of the quadratic polynomial $p(x) = x^TAx$. The proof of the above theorem from the lemma below is an easy Markov's inequality (for suitable $k$) and omitted.
+
+\begin{lemma}
+\label{lem:Lknorm}
+There is some absolute constant $C> 0$ such that for any $k\geq 2$, we have 
+\[
+\avg{x}{|x^TAx|^k}\leq C^k \sqrt{k}^k \max\{\mynorm{A}_F, \sqrt{k}\mynorm{A}_2\}^k.
+\]
+\end{lemma}
+
+\begin{proof}
+We prove the above lemma for $k= 2^i$. For other $k$, the proof is subsequently easy by using Jensen and using the above for $k' = 2^{\lceil \lg k\rceil}$.
+
+We proceed by induction on $i$. The base case is $i=2$, where we can directly calculate the expectation. We have
+\[
+\avg{}{(x^TAx)^2} = \sum_{i < j}  (2 A_{i,j})^2 = 4 \sum_{i < j} A_{i,j}^2 = 2 \mynorm{A}_F^2,
+\]
+which proves the base case as long as $C \geq 1$.
+
+For the induction case, let $k = 2^{i+1}$. We first use a decoupling trick to reduce the problem of bounding the moment of $x^TAx$ to the same problem for $x^TAy$ where $y$ is independent of $x$. 
+
+\begin{claim}[Decoupling]
+\label{clm:decouple}
+Assume $A$ has trace $0$. Then, $\avg{x}{|x^TAx|^k}\leq 4^k\avg{x,y}{|x^TAy|^k}$.
+\end{claim}
+
+Note that the condition that $A$ has trace $0$ is important. If $A$ is the identity matrix, then the above is not true for small $k$ (a factor of $n$ will enter the picture).
+
+\begin{proof}
+Note that since $tr(A)= 0$, we have $x^TAx = \sum_{i\neq j}x_ix_j A_{i,j}$.
+
+Imagine that we partition $[n]$ into $S$ and $\overline{S}$ and consider only the expectation of $|x_S^T A_S x_{\overline{S}}|^k$ where $x_S$ is the restriction of $x$ to the co-ordinates in $S$ and $A_S$ is the natural $|S|\times |\overline{S}|$ submatrix of $A$. Note that each term (recall only terms with $i\neq j$ count) in the expansion of $|x^TAx|$ above appears in $|x_S^T A_S x_{\overline{S}}|^k$ with probability at least $1/4$. This indicates that we should be able to bound the expectation of the former with that of the latter. 
+
+We do this as follows. Let $z\in_R \{0,1\}^n$ be the characteristic vector of $S$. For any fixed $x$, we have
+\[
+\avg{z}{|x_S^T A_S x_{\overline{S}}|^k} = \avg{z}{|\sum_{i, j} x_i x_j A_{i,j}z_i (1-z_j)|^k} \geq |\sum_{i, j} x_i x_j A_{i,j} \avg{z}{z_i (1-z_j)}|^k = \frac{1}{4^k}|x^TAx|^k
+\]
+Taking expectations w.r.t. $x$ on both sides yields $\avg{x}{|x^TAx|^k} \leq 4^k\avg{x,S}{|x_SA_Sx_{\overline{S}}|^k}$. In particular, we can fix an $S$ so that this inequality holds. 
+
+Now since the random variables in $x_S$ and $x_{\overline{S}}$ are mutually independent, we may replace the latter by $y_{\overline{S}}$ without any problems. Thus, we have
+\[
+\avg{x}{|x^TAx|^k} \leq 4^k\avg{x_S,y_{\overline{S}}}{|x_SA_Sy_{\overline{S}}|^k} 
+\]
+
+We want to compare the expectation on the RHS above to $\avg{x,y}{|x^TAy|^k}$. Note that this expectation also depends on the variables in $x_{\overline{S}}$ and $y_S$ which are independent of the variables in the above expectation. Using Jensen, we get
+\[
+\avg{x_S,y_{\overline{S}},x_{\overline{S}},y_S}{|x^T A y|^k} \geq \avg{x_S,y_{\overline{S}}}{|\avg{x_{\overline{S}},y_S}{x^T A y}|^k} =  \avg{x_S,y_{\overline{S}}}{|x_S^T A_S y_{\overline{S}}|^k}
+\]
+which proves the claim.
+\end{proof}
+
+So we now bound $\avg{x,y}{|x^TAy|^k}$. To bound this term, we note that for every fixing of $x$, we get a linear function of $y$. Let $x^T A = (a_{x,i})_{i=1}^n$. Then we have
+\[
+\avg{x,y}{|x^T Ay|^k} = \avg{x,y}{|\sum_{i}a_{x,i}y_i|^k} \leq 2^k \sqrt{k}^k \avg{x}{|\sum_i a_{x,i}^2|^{k/2}} = 2^k \sqrt{k}^k\avg{x}{(x^TA^2 x)^{k/2}}
+\]
+where the inequality is the Khinchtine-Kahane inequality.
+
+To bound the expectation in the RHS above, we use the Induction hypothesis. We cannot do so directly, since $A^2$ does not have have trace $0$. So we first subtract $(tr(A^2)/n)I$ so that we have trace $0$\footnote{Here, if we were instead shooting for $0$s on the diagonal, we would have to subtract an ugly diagonal matrix. The disadvantage with that is that now it is unclear what happens to $\mynorm{B}_2$.}. We have $x^T A^2 x = x^T B x + tr(A^2) = x^T B x + tr(A^2) = x^T B x + \mynorm{A}_F^2$. Hence, we have 
+\begin{align*}
+\avg{x}{|x^T A^2 x|^{k/2}} &= \avg{x}{|x^T B x + \mynorm{A}_F^2|^{k/2}}\\
+&\leq C^{k/2}2^{k/2} \max\{\avg{x}{|x^TBx|^{k/2}},\mynorm{A}_F^k\}\\
+&\leq C^{k/2}2^{k/2} \max\{\sqrt{k/2}\mynorm{B}_F,(k/2) \mynorm{B}_2,\mynorm{A}_F^2\}^{k/2}
+\end{align*}
+where the first inequality is a consequence of the triangle inequality for $L_k$ and the second inequality is just the induction hypothesis applied to $B$. Now, note that $\lambda_i(B) = \lambda_i(A^2) - \frac{1}{n}\sum_i \lambda_i(A^2)$. In particular, we get $\mynorm{B}_2 = \max_i |\lambda_i(B)|\leq \max_i |\lambda_i(A^2)| = \mynorm{A^2}_2 = \mynorm{A}_2^2$. Similarly, we also have $\mynorm{B}_F^2 = \sum_i \lambda_i(B)^2 = \sum_i (\lambda_i(A^2) - \frac{1}{n}\sum_j \lambda_j(A^2))^2 \leq\footnote{Cauchy Schwarz: Consider the process where we pick $i\in [n]$ at random and let $X = \lambda_i(A^2)$. Then the quantity on the LHS is $n$ times the variance of $X$, which is of course bounded by $n$ times its second moment.} \sum_i \lambda_i(A^2)^2 = \sum_i \lambda_i(A)^4 \leq \mynorm{A}_2^2 \mynorm{A}_F^2$; hence, we have $\mynorm{B}_F \leq \mynorm{A}_F\mynorm{A}_2$.
+
+Putting things together, the RHS in the display above may be bounded by
+\begin{align*}
+C^{k/2}2^{k/2} \max\{\sqrt{k}\mynorm{A}_F\mynorm{A}_2,k\mynorm{A}_2^2,\mynorm{A}_F^2\}^{k/2} \leq (2C)^{k/2} \max\{\mynorm{A}_F,\sqrt{k}\mynorm{A}_2\}^k
+\end{align*}
+
+Putting everything together, we get
+\[
+\avg{x}{|x^TAx|^k} \leq (2C)^{k/2}8^k \max\{\sqrt{k}\mynorm{A}_F,k\mynorm{A}_2\}^k \leq C^k \max\{\sqrt{k}\mynorm{A}_F,k\mynorm{A}_2\}^k
+\]
+for $C \geq 128$.
+
+\end{proof}
+
+
+\end{document}
